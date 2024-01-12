@@ -60,7 +60,7 @@ class ListCart extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("Votre panier total est de"),
-                    Text(cart.priceTotalInCents())
+                    Text("${(int.parse(cart.priceTotalInCents()) / 100).toStringAsFixed(2)}€"),
                   ],
                 ),
                 //Ajouter la ligne de total (Row Votre panier total est de)

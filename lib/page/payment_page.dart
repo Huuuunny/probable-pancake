@@ -17,12 +17,14 @@ class PaymentPage extends StatelessWidget {
         builder: (context, cart, child) {
           return Column(
             children: [
-              buildCardRecap(context, cart), // Pass the Cart object here
-              SizedBox(height: 20), // Add space between cards
+              buildCardRecap(context, cart),
+              SizedBox(height: 20),
               Text("Adresse de livraison"),
-              buildCardAdress(context), // Add another card
+              SizedBox(height: 10),
+              buildCardAdress(context),
+              SizedBox(height: 20),
               Text("Methode de paiement"),
-              SizedBox(height: 20), // Add space between cards
+              SizedBox(height: 10),
               IconCardRow(),
             ],
           );
@@ -32,23 +34,19 @@ class PaymentPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Theme
-                .of(context)
-                .primaryColor, // Use the primary color from the theme
-            onPrimary:
-            Theme
+            foregroundColor: Theme
                 .of(context)
                 .primaryTextTheme
-                .button
-                ?.color, // Text color
+                .labelLarge
+                ?.color, backgroundColor: Theme
+                .of(context)
+                .primaryColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                  8), // Optional: if you need round corners
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
-          // onPressed: () => context.go("/payment"),
           onPressed: () {},
-          child: const Text("Confirmer l'achat"),
+          child: const Text("Proceder au paiement"),
         ),
       ),);
   }
@@ -81,7 +79,7 @@ Widget buildCardRecap(BuildContext context, Cart cart) {
         children: [
           buildRow("Récapitulatif de votre commande", ""),
           buildRow("Sous Total", subTotalString),
-          buildRow("Vous Economisez", "1€"),
+          buildRow("Vous Economisez", "-1€"),
           buildRow("TVA", taxString),
           buildRow("Total", totalString),
         ],
@@ -130,8 +128,16 @@ Widget buildRow(String text, String number) {
   );
 }
 
-class IconCardRow extends StatelessWidget {
+class IconCardRow extends StatefulWidget {
   const IconCardRow({super.key});
+
+  @override
+  _IconCardRowState createState() => _IconCardRowState();
+}
+
+class _IconCardRowState extends State<IconCardRow> {
+  // Variable to keep track of the selected card index.
+  int selectedCardIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -139,23 +145,44 @@ class IconCardRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       // Distribute the cards evenly across the Row
       children: <Widget>[
-        buildCard(FontAwesomeIcons.ccVisa),
-        buildCard(FontAwesomeIcons.ccApplePay),
-        buildCard(FontAwesomeIcons.ccMastercard),
-        buildCard(FontAwesomeIcons.ccPaypal),
+        buildCard(FontAwesomeIcons.ccVisa, 0), // Pass an index to identify the card
+        buildCard(FontAwesomeIcons.ccApplePay, 1),
+        buildCard(FontAwesomeIcons.ccMastercard, 2),
+        buildCard(FontAwesomeIcons.ccPaypal, 3),
       ],
     );
   }
 
-  Widget buildCard(IconData icon) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Use minimum space
-          children: <Widget>[
-            Icon(icon), // Icon for the card
-          ],
+  Widget buildCard(IconData icon, int cardIndex) {
+    bool isSelected = cardIndex == selectedCardIndex;
+
+    return GestureDetector(
+      onTap: () {
+        // Toggle the selection when the card is tapped
+        setState(() {
+          if (isSelected) {
+            selectedCardIndex = -1; // Deselect the card if it's already selected
+          } else {
+            selectedCardIndex = cardIndex; // Select the card
+          }
+        });
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: isSelected ? Colors.red : Colors.transparent,
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(icon, size: 48.0), // Adjust size here
+            ],
+          ),
         ),
       ),
     );

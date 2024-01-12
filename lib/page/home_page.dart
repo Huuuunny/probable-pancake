@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../bo/cart.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -25,7 +25,8 @@ class HomePage extends StatelessWidget {
               ),
               IconButton(
                   onPressed: () => context.go("/about-us"),
-                  icon: Icon(Icons.info_outline))
+                  icon: const Icon(Icons.info_outline)
+              )
             ],
           ),
           body: FutureBuilder<List<Article>>(
@@ -35,26 +36,28 @@ class HomePage extends StatelessWidget {
                       itemCount: snapshot.data!.length,
                       separatorBuilder: (_, __) => const Divider(),
                       itemBuilder: (context, int index) =>
-                          ItemArticle(article: snapshot.data![index]))
+                          ItemArticle(article: snapshot.data![index])
+              )
                   : const Icon(Icons.error)),
-          // Add a bottom navigation bar with a single button
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Theme.of(context)
-                    .primaryColor, // Use the primary color from the theme
-                onPrimary: Theme.of(context)
-                    .primaryTextTheme
-                    .button
-                    ?.color, // Text color
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      8), // Optional: if you need round corners
+            child: Visibility(
+              visible: context.watch<Cart>().items.isNotEmpty,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Theme.of(context)
+                      .primaryTextTheme
+                      .labelLarge
+                      ?.color, backgroundColor: Theme.of(context)
+                      .primaryColor, // Text color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        8), // Optional: if you need round corners
+                  ),
                 ),
+                onPressed: () => context.go("/payment"),
+                child: const Text("Confirmer l'achat"),
               ),
-              onPressed: () => context.go("/payment"),
-              child: Text("Confirmer l'achat"),
             ),
           ),
         ),
