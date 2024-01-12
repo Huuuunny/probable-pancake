@@ -4,15 +4,11 @@ import 'package:flutter/foundation.dart';
 class Cart with ChangeNotifier {
   final _items = <Article>[];
 
-  String priceTotalInEuro() =>
-      "${_items.fold(0 as num, (itemPrev, item) => itemPrev + item.prix) / 10}€";
-  //String priceTotalInEuroSimpl() {
-  //  var prix = 0 as num;
-  //  for (Article item in _items) {
-  //    prix+= item.prix;
-  //  }
-  //  return "$prix€";
-  //}
+  String priceTotalInCents() {
+    var totalCents = _items.fold(0, (total, item) => total + (item.prix * 100).toInt());
+    return "$totalCents";
+  }
+
   List<Article> get items => _items;
   //<Article>[].fold(0 as num, (previousValue, element) => previousValue + element.prix)
 

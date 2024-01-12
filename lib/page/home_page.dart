@@ -12,30 +12,53 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        actions: [
-          Badge(
-            label: Text("${context.watch<Cart>().items.length}"),
-            offset: const Offset(-6, 7),
-            child: IconButton(
-                onPressed: () => context.go('/cart'),
-                icon: const Icon(Icons.shopping_cart)),
+  Widget build(BuildContext context) => SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            actions: [
+              Badge(
+                label: Text("${context.watch<Cart>().items.length}"),
+                offset: const Offset(-6, 7),
+                child: IconButton(
+                    onPressed: () => context.go('/cart'),
+                    icon: const Icon(Icons.shopping_cart)),
+              ),
+              IconButton(
+                  onPressed: () => context.go("/about-us"),
+                  icon: Icon(Icons.info_outline))
+            ],
           ),
-          IconButton(
-              onPressed: () => context.go("/about-us"),
-              icon: Icon(Icons.info_outline))
-        ],
-      ),
-      body: FutureBuilder<List<Article>>(
-          future: fetchListArticles(),
-          builder: (context, snapshot) => snapshot.hasData
-              ? ListView.separated(
-                  itemCount: snapshot.data!.length,
-                  separatorBuilder: (_, __) => const Divider(),
-                  itemBuilder: (context, int index) =>
-                      ItemArticle(article: snapshot.data![index]))
-              : const Icon(Icons.error)));
+          body: FutureBuilder<List<Article>>(
+              future: fetchListArticles(),
+              builder: (context, snapshot) => snapshot.hasData
+                  ? ListView.separated(
+                      itemCount: snapshot.data!.length,
+                      separatorBuilder: (_, __) => const Divider(),
+                      itemBuilder: (context, int index) =>
+                          ItemArticle(article: snapshot.data![index]))
+                  : const Icon(Icons.error)),
+          // Add a bottom navigation bar with a single button
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context)
+                    .primaryColor, // Use the primary color from the theme
+                onPrimary: Theme.of(context)
+                    .primaryTextTheme
+                    .button
+                    ?.color, // Text color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      8), // Optional: if you need round corners
+                ),
+              ),
+              onPressed: () => context.go("/payment"),
+              child: Text("Confirmer l'achat"),
+            ),
+          ),
+        ),
+      );
 
   Future<List<Article>> fetchListArticles() async {
     final response = await get(Uri.parse("https://fakestoreapi.com/products"));
@@ -56,6 +79,7 @@ class ItemArticle extends StatelessWidget {
   const ItemArticle({super.key, required this.article});
 
   final Article article;
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
